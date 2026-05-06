@@ -1,0 +1,11 @@
+ALTER TABLE restaurantes ADD COLUMN IF NOT EXISTS telefono VARCHAR(50);
+
+CREATE TABLE IF NOT EXISTS usuarios (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  restaurante_id INT REFERENCES restaurantes(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usuario_email ON usuarios(email);
