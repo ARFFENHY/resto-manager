@@ -27,7 +27,7 @@ export default function LoginPage() {
         window.location.href = "/admin";
       } else {
         const data = await res.json();
-        setError(data.error || "Credenciales inválidas");
+        setError(data.details ? `${data.error}: ${data.details}` : data.error || "Error al iniciar sesión");
       }
     } catch (err) {
       setError("Error de conexión");
