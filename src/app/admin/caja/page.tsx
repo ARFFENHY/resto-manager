@@ -232,8 +232,9 @@ export default function AdminCaja() {
           </div>
 
           {/* Incoming Orders (Right Column - 3/12) */}
-          <div className="md:col-span-3 space-y-6">
-            <div className="bg-slate-900 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden border-4 border-blue-500/50">
+          <div className="md:col-span-3 space-y-6 min-w-[300px]">
+            <div className="bg-blue-600 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden border-4 border-white">
+               <h2 className="text-white font-black text-2xl mb-4">PANEL DE PEDIDOS ACTIVO</h2>
                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
                
                <div className="flex items-center justify-between mb-6 relative z-10">
