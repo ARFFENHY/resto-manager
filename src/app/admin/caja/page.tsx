@@ -79,7 +79,13 @@ export default function AdminCaja() {
       const res = await fetch('/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cliente_nombre: `Mesa ${selectedMesa.numero_o_nombre}`, total, slug: "restomanager", mesa_nombre: selectedMesa.numero_o_nombre, items: tempBasket.map(i => ({ name: i.product.nombre, quantity: i.quantity, price: parseFloat(i.product.precio) })) })
+        body: JSON.stringify({ 
+        cliente_nombre: `Mesa ${selectedMesa.numero_o_nombre}`, 
+        total, slug: "restomanager", 
+        origen: 'pos',
+        mesa_nombre: selectedMesa.numero_o_nombre, 
+        items: tempBasket.map(i => ({ name: i.product.nombre, quantity: i.quantity, price: parseFloat(i.product.precio) })) 
+      })
       });
       if (res.ok) { fetchData(); printTicket(selectedMesa.numero_o_nombre, itemsDescription, total, true); setTempBasket([]); setShowProductPicker(false); }
     } catch (error) { console.error(error); }
@@ -270,7 +276,7 @@ export default function AdminCaja() {
                           </button>
                           <button 
                             onClick={async () => {
-                              await fetch(`/api/pedidos/${o.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'en_preparacion' }) });
+                              await fetch(`/api/pedidos/${o.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'confirmado' }) });
                               fetchData();
                             }}
                             className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all"

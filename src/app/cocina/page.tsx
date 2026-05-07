@@ -66,7 +66,7 @@ export default function KitchenDisplay() {
     } catch (error) { console.error(error); fetchOrders(); }
   };
 
-  const activeOrders = orders.filter(o => o.estado === 'pendiente' || o.estado === 'preparando');
+  const activeOrders = orders.filter(o => o.estado === 'confirmado' || o.estado === 'preparando');
   const groupedMesas: GroupedMesa[] = [];
   activeOrders.forEach(order => {
     let group = groupedMesas.find(g => g.mesa_nombre === order.mesa_nombre);

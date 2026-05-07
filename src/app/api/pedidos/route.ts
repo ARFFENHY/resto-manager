@@ -66,11 +66,14 @@ export async function POST(req: Request) {
     const restaurante_id = restRes.rows[0].id;
 
     // Insert order
+    const orderOrigen = body.origen || 'web';
+    const initialEstado = orderOrigen === 'pos' ? 'confirmado' : 'pendiente';
+
     const orderRes = await query(`
       INSERT INTO pedidos (cliente_nombre, telefono, direccion, total, estado, restaurante_id, origen, mesa_nombre, mozo_nombre)
-      VALUES ($1, $2, $3, $4, 'pendiente', $5, 'web', $6, $7)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING id, created_at
-    `, [cliente_nombre || 'Cliente Web', telefono || '', direccion || '', total, restaurante_id, mesa_nombre || null, mozo_nombre || null]);
+    `, [cliente_nombre || 'Cliente Web', telefono || '', direccion || '', total, initialEstado, restaurante_id, orderOrigen, mesa_nombre || null, mozo_nombre || null]);
     
     const newOrderId = orderRes.rows[0].id;
 
