@@ -158,10 +158,10 @@ export default function AdminCaja() {
         </button>
       </div>
 
-      <main className="px-2 pb-6 max-w-[100%] mx-auto space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Stats & List (Left Column - 1/4) */}
-          <div className="md:col-span-1 space-y-4">
+      <main className="px-2 pb-6 w-full mx-auto space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          {/* Stats & List (Left Column - 2/12) */}
+          <div className="md:col-span-2 space-y-4">
             <div className="bg-white p-6 rounded-[32px] border shadow-sm flex flex-col justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recaudación</span>
               <p className="text-2xl font-black text-slate-900">${historyRaw.filter(o => o.estado === 'listo').reduce((s,o) => s+o.total, 0).toFixed(2)}</p>
@@ -198,8 +198,8 @@ export default function AdminCaja() {
             </div>
           </div>
 
-          {/* Mesa Map Area (Middle Column - 2/4) */}
-          <div className="md:col-span-2">
+          {/* Mesa Map Area (Middle Column - 7/12) */}
+          <div className="md:col-span-7">
             <div className="bg-white p-8 rounded-[48px] border shadow-inner relative h-[750px] overflow-hidden" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1.5px, transparent 0)', backgroundSize: '40px 40px' }}>
               <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
                 <span className="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Mapa Interactivo del Salón</span>
@@ -231,9 +231,9 @@ export default function AdminCaja() {
             </div>
           </div>
 
-          {/* Incoming Orders (Right Column - 1/4) */}
-          <div className="md:col-span-1 space-y-6">
-            <div className="bg-slate-900 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden">
+          {/* Incoming Orders (Right Column - 3/12) */}
+          <div className="md:col-span-3 space-y-6">
+            <div className="bg-slate-900 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden border-4 border-blue-500/50">
                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
                
                <div className="flex items-center justify-between mb-6 relative z-10">
