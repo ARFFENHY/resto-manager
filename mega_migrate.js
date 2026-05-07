@@ -3,12 +3,30 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const dbUrl = "postgresql://postgres:Arfeni090588@db.mjokebqkjxdvbtmgzyel.supabase.co:5432/postgres";
-const pool = new Pool({ connectionString: dbUrl });
+// Forzar ignorar certificados no autorizados para la migración
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const dbUrl = "postgresql://postgres:Arfeni090588@db.mjokebqkjxdvbtmgzyel.supabase.co:5432/postgres?sslmode=require";
+const pool = new Pool({ 
+  connectionString: dbUrl,
+  ssl: true // Activamos SSL
+});
 
 async function run() {
   try {
-    console.log('--- INICIANDO MIGRACIÓN A SUPABASE ---');
+    console.log('--- RECONSTRUYENDO BASE DE DATOS EN SUPABASE (FORCE SSL) ---');
+
+    // 0. Limpieza total
+    console.log('0. Limpiando tablas existentes...');
+    await pool.query(`
+      DROP TABLE IF EXISTS pedido_items CASCADE;
+      DROP TABLE IF EXISTS pedidos CASCADE;
+      DROP TABLE IF EXISTS productos CASCADE;
+      DROP TABLE IF EXISTS usuarios CASCADE;
+      DROP TABLE IF EXISTS cajas CASCADE;
+      DROP TABLE IF EXISTS restaurantes CASCADE;
+    `);
+    console.log('   OK: Base de datos limpia.');
 
     const executeFile = async (filename) => {
       console.log(`Ejecutando ${filename}...`);
@@ -39,7 +57,7 @@ async function run() {
       ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS caja_id INTEGER REFERENCES cajas(id);
     `);
 
-    // Mesas y Mozos (campos extra si no están en alter_schema)
+    // Mesas y Mozos
     await pool.query(`
       ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS mesa_nombre VARCHAR(50);
       ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS mozo_nombre VARCHAR(100);
@@ -67,7 +85,7 @@ async function run() {
     `);
     console.log('   OK: Productos demo creados.');
 
-    console.log('--- MIGRACIÓN COMPLETADA CON ÉXITO ---');
+    console.log('--- RECONSTRUCCIÓN COMPLETADA CON ÉXITO ---');
     
     // Actualizar .env local
     fs.writeFileSync(path.join(__dirname, '.env'), `DATABASE_URL="${dbUrl}"\n`);
@@ -75,7 +93,7 @@ async function run() {
     console.log('Archivos .env y .env.local actualizados.');
 
   } catch (err) {
-    console.error('ERROR DURANTE LA MIGRACIÓN:', err);
+    console.error('ERROR DURANTE LA RECONSTRUCCIÓN:', err);
   } finally {
     await pool.end();
   }

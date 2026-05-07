@@ -47,9 +47,10 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error("Login error:", error);
+    const dbHost = process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).hostname : 'unknown';
     return NextResponse.json({ 
       error: "Error en el servidor", 
-      details: error instanceof Error ? error.message : String(error) 
+      details: `${error instanceof Error ? error.message : String(error)} (Target: ${dbHost})` 
     }, { status: 500 });
   }
 }

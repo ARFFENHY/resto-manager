@@ -27,10 +27,13 @@ export default function LoginPage() {
         window.location.href = "/admin";
       } else {
         const data = await res.json();
-        setError(data.details ? `${data.error}: ${data.details}` : data.error || "Error al iniciar sesión");
+        const errorMessage = data.details 
+          ? `${data.error}\n\nTechnical info: ${data.details}` 
+          : data.error || "Error al iniciar sesión";
+        setError(errorMessage);
       }
     } catch (err) {
-      setError("Error de conexión");
+      setError(`Error de conexión local: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +56,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="bg-slate-900/50 backdrop-blur-xl p-8 rounded-[32px] shadow-2xl border border-white/10 flex flex-col gap-5">
           {error && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-2xl text-sm font-bold text-center border border-red-100">
+            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-2xl text-sm font-bold border border-red-100 whitespace-pre-wrap break-all">
               {error}
             </div>
           )}
