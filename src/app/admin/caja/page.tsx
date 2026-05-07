@@ -152,9 +152,9 @@ export default function AdminCaja() {
         </button>
       </div>
 
-      <main className="px-6 pb-6 max-w-[1600px] mx-auto space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Stats & List (Left Column - 1/5) */}
+      <main className="px-6 pb-6 max-w-[1800px] mx-auto space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+          {/* Stats & List (Left Column - 1/6) */}
           <div className="lg:col-span-1 space-y-4">
             <div className="bg-white p-6 rounded-[32px] border shadow-sm flex flex-col justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recaudación</span>
@@ -192,8 +192,8 @@ export default function AdminCaja() {
             </div>
           </div>
 
-          {/* Mesa Map Area (Right Column - 4/5) */}
-          <div className="lg:col-span-4">
+          {/* Mesa Map Area (Middle Column - 3/6) */}
+          <div className="lg:col-span-3">
             <div className="bg-white p-8 rounded-[48px] border shadow-inner relative h-[750px] overflow-hidden" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1.5px, transparent 0)', backgroundSize: '40px 40px' }}>
               <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
                 <span className="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Mapa Interactivo del Salón</span>
@@ -222,6 +222,66 @@ export default function AdminCaja() {
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm"><div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div><span className="text-[10px] font-black text-slate-500 uppercase">En Consumo</span></div>
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm"><div className="w-3 h-3 bg-slate-200 rounded-full"></div><span className="text-[10px] font-black text-slate-500 uppercase">Libre</span></div>
               </div>
+            </div>
+          </div>
+
+          {/* Incoming Orders (Right Column - 2/6) */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-slate-900 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
+               
+               <div className="flex items-center justify-between mb-6 relative z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-white/10 p-2 rounded-xl text-blue-400"><Send className="w-5 h-5"/></div>
+                    <h3 className="text-white font-black text-xs uppercase tracking-widest">Pedidos App / Web</h3>
+                  </div>
+                  <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-[9px] font-black animate-pulse">
+                    {orders.filter(o => o.estado === 'pendiente' && !mesas.some(m => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre))).length} NUEVOS
+                  </span>
+               </div>
+
+               <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar relative z-10">
+                  {orders.filter(o => o.estado === 'pendiente' && !mesas.some(m => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre))).length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-white/20 gap-4">
+                      <Clock className="w-16 h-16"/>
+                      <p className="font-black text-xs uppercase tracking-widest">Esperando pedidos...</p>
+                    </div>
+                  ) : (
+                    orders.filter(o => o.estado === 'pendiente' && !mesas.some(m => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre))).map((o, i) => (
+                      <div key={i} className="bg-white/5 border border-white/10 p-5 rounded-3xl group hover:bg-white/10 transition-all">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <span className="text-blue-400 text-[9px] font-black uppercase tracking-widest">Nuevo Pedido Web</span>
+                            <h4 className="text-white font-black text-lg leading-tight mt-1">{o.cliente_nombre}</h4>
+                          </div>
+                          <p className="text-emerald-400 font-black text-xl tracking-tighter">${o.total.toFixed(2)}</p>
+                        </div>
+                        
+                        <div className="text-white/60 text-xs font-medium mb-4 line-clamp-2 italic">
+                          "{o.items}"
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => setConfirmData({type: 'anular', id: o.id, text: '¿Rechazar este pedido?'})}
+                            className="flex-1 bg-white/5 text-white/40 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-500/20 hover:text-rose-400 transition-all"
+                          >
+                            Rechazar
+                          </button>
+                          <button 
+                            onClick={async () => {
+                              await fetch(`/api/pedidos/${o.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'en_preparacion' }) });
+                              fetchData();
+                            }}
+                            className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all"
+                          >
+                            Autorizar
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+               </div>
             </div>
           </div>
         </div>

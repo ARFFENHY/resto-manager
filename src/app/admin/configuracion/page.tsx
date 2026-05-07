@@ -50,6 +50,7 @@ export default function AdminConfig() {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const mapRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -104,7 +105,7 @@ export default function AdminConfig() {
       });
       if (res.ok) {
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
+        setHasChanges(false);
       }
     } catch (error) {
       console.error(error);
@@ -239,7 +240,12 @@ export default function AdminConfig() {
                   <div className="relative">
                     <Store className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5"/>
                     <input 
-                      type="text" value={config.nombre} onChange={e => setConfig({...config, nombre: e.target.value})}
+                      type="text" value={config.nombre} 
+                      onChange={e => {
+                        setConfig({...config, nombre: e.target.value});
+                        setHasChanges(true);
+                        setShowSuccess(false);
+                      }}
                       placeholder="Ej: RestoManager"
                       className="w-full bg-slate-50 border border-slate-100 rounded-[24px] pl-14 pr-6 py-5 font-black text-lg outline-none focus:border-emerald-500 focus:bg-white transition-all"
                     />
@@ -251,7 +257,12 @@ export default function AdminConfig() {
                   <div className="relative">
                     <Phone className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5"/>
                     <input 
-                      type="text" value={config.whatsapp} onChange={e => setConfig({...config, whatsapp: e.target.value})}
+                      type="text" value={config.whatsapp} 
+                      onChange={e => {
+                        setConfig({...config, whatsapp: e.target.value});
+                        setHasChanges(true);
+                        setShowSuccess(false);
+                      }}
                       placeholder="Ej: 5491112345678"
                       className="w-full bg-slate-50 border border-slate-100 rounded-[24px] pl-14 pr-6 py-5 font-black text-lg outline-none focus:border-emerald-500 focus:bg-white transition-all"
                     />
@@ -264,7 +275,12 @@ export default function AdminConfig() {
                   <div className="relative">
                     <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5"/>
                     <input 
-                      type="text" value={config.direccion} onChange={e => setConfig({...config, direccion: e.target.value})}
+                      type="text" value={config.direccion} 
+                      onChange={e => {
+                        setConfig({...config, direccion: e.target.value});
+                        setHasChanges(true);
+                        setShowSuccess(false);
+                      }}
                       placeholder="Ej: Av. Córdoba 1234, CABA"
                       className="w-full bg-slate-50 border border-slate-100 rounded-[24px] pl-14 pr-6 py-5 font-black text-lg outline-none focus:border-emerald-500 focus:bg-white transition-all"
                     />
