@@ -17,7 +17,7 @@ export async function GET() {
     `, [session.restauranteId]);
 
     return NextResponse.json({ 
-      cajaAbierta: res.rowCount > 0 ? res.rows[0] : null 
+      cajaAbierta: res.rows.length > 0 ? res.rows[0] : null 
     });
   } catch (error) {
     console.error("Error fetching caja status:", error);

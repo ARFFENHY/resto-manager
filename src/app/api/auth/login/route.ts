@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     console.log("Intentando login para:", cleanEmail);
     const res = await query('SELECT * FROM usuarios WHERE email = $1', [cleanEmail]);
     
-    if (res.rowCount === 0) {
+    if (res.rows.length === 0) {
       return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 });
     }
 

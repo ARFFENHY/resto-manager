@@ -12,7 +12,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       WHERE slug = $1
     `, [slug]);
 
-    if (restRes.rowCount === 0) {
+    if (restRes.rows.length === 0) {
       return NextResponse.json({ error: "Restaurante no encontrado" }, { status: 404 });
     }
 

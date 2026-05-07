@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     // Buscar restaurante_id real usando el slug
     const restRes = await query('SELECT id FROM restaurantes WHERE slug = $1', [slug]);
     
-    if (restRes.rowCount === 0) {
+    if (restRes.rows.length === 0) {
       return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
     }
     

@@ -24,7 +24,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       RETURNING id, nombre, descripcion, precio, imagen, categoria
     `, [nombre, descripcion || "", precio, imagen || "", categoria, parseInt(idParam), session.restauranteId]);
 
-    if (res.rowCount === 0) {
+    if (res.rows.length === 0) {
       return NextResponse.json({ error: "Product not found or access denied" }, { status: 404 });
     }
 
@@ -54,7 +54,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       RETURNING id
     `, [parseInt(idParam), session.restauranteId]);
 
-    if (res.rowCount === 0) {
+    if (res.rows.length === 0) {
       return NextResponse.json({ error: "Product not found or access denied" }, { status: 404 });
     }
 

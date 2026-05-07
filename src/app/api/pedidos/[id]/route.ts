@@ -32,7 +32,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       RETURNING id, estado
     `, [estado, parseInt(idParam), session.restauranteId]);
 
-    if (res.rowCount === 0) {
+    if (res.rows.length === 0) {
       console.log(`[PUT /api/pedidos] Error: Row count 0. No se actualizó nada en DB.`);
       return NextResponse.json({ error: "Order not found or access denied" }, { status: 404 });
     }
