@@ -49,6 +49,7 @@ export default function AdminConfig() {
   const [isLocked, setIsLocked] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const mapRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -102,7 +103,8 @@ export default function AdminConfig() {
         body: JSON.stringify(config)
       });
       if (res.ok) {
-        alert("Configuración guardada correctamente");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
       }
     } catch (error) {
       console.error(error);
@@ -271,10 +273,14 @@ export default function AdminConfig() {
               </div>
 
               <button 
-                type="submit" disabled={isSaving}
-                className="w-full bg-emerald-500 text-white py-6 rounded-[28px] font-black uppercase tracking-widest text-sm shadow-xl shadow-emerald-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                type="submit" disabled={isSaving || showSuccess}
+                className={`w-full py-6 rounded-[28px] font-black uppercase tracking-widest text-sm shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-50 ${
+                  showSuccess 
+                    ? "bg-slate-900 text-emerald-400 shadow-emerald-500/10 scale-[0.98]" 
+                    : "bg-emerald-500 text-white shadow-emerald-500/20 active:scale-[0.98]"
+                }`}
               >
-                {isSaving ? "Guardando..." : <><Save className="w-5 h-5"/> Guardar Cambios</>}
+                {isSaving ? "Guardando..." : showSuccess ? <><Check className="w-5 h-5"/> ¡Guardado!</> : <><Save className="w-5 h-5"/> Guardar Cambios</>}
               </button>
             </form>
           </div>

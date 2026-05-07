@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 const pool = new Pool({
-  connectionString: "postgresql://postgres:Arfeni090588@db.mjokebqkjxdvbtmgzyel.supabase.co:5432/postgres?sslmode=require"
+  connectionString: "postgresql://postgres.mjokebqkjxdvbtmgzyel:Arfeni090588@aws-1-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require"
 });
 
 async function test() {
