@@ -115,6 +115,28 @@ export default function AdminCaja() {
     setConfirmData(null);
   };
 
+  const handleAuthorize = async (orderId: string) => {
+    try {
+      const res = await fetch(`/api/pedidos/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: 'confirmado' })
+      });
+      if (res.ok) fetchData();
+    } catch (error) { console.error(error); }
+  };
+
+  const handleReject = async (orderId: string) => {
+    try {
+      const res = await fetch(`/api/pedidos/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: 'anulado' })
+      });
+      if (res.ok) fetchData();
+    } catch (error) { console.error(error); }
+  };
+
   const historyRaw = orders.filter(o => o.estado === 'listo' || o.estado === 'anulado');
   const groupedHistory: any[] = [];
   historyRaw.forEach(o => {
@@ -158,10 +180,10 @@ export default function AdminCaja() {
         </button>
       </div>
 
-      <main className="px-2 pb-6 w-full mx-auto space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* Stats & List (Left Column - 2/12) */}
-          <div className="md:col-span-2 space-y-4">
+      <main className="px-4 pb-6 w-full mx-auto space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column (Stats + History + List) - 2/12 */}
+          <div className="lg:col-span-2 space-y-6">
             <div className="bg-white p-6 rounded-[32px] border shadow-sm flex flex-col justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recaudación</span>
               <p className="text-2xl font-black text-slate-900">${historyRaw.filter(o => o.estado === 'listo').reduce((s,o) => s+o.total, 0).toFixed(2)}</p>
@@ -170,17 +192,17 @@ export default function AdminCaja() {
             <button onClick={() => setShowSalesHistory(true)} className="w-full bg-slate-900 p-6 rounded-[32px] text-white flex items-center justify-between group hover:bg-slate-800 transition-all shadow-lg">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-500/20 p-2 rounded-xl text-blue-400"><TrendingUp className="w-5 h-5"/></div>
-                <p className="font-black text-sm">Historial</p>
+                <p className="font-black text-sm text-left">Historial</p>
               </div>
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
             </button>
 
             {/* Mesa Quick List */}
-            <div className="bg-white rounded-[32px] border shadow-sm p-5 flex flex-col h-[600px]">
+            <div className="bg-white rounded-[32px] border shadow-sm p-5 flex flex-col h-[500px]">
               <h3 className="font-black text-[10px] uppercase tracking-widest text-slate-400 mb-4 px-2">Listado Mesas</h3>
               <div className="overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                 {mesas.sort((a,b) => a.numero_o_nombre.localeCompare(b.numero_o_nombre, undefined, {numeric: true})).map(m => {
-                  const activeO = orders.filter(o => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre) && o.estado !== 'listo' && o.estado !== 'anulado');
+                  const activeO = orders.filter(o => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre) && o.estado !== 'listo' && o.estado !== 'anulado' && o.estado !== 'pendiente');
                   const hasO = activeO.length > 0;
                   const mTotal = activeO.reduce((s,o) => s + o.total, 0);
                   
@@ -198,18 +220,18 @@ export default function AdminCaja() {
             </div>
           </div>
 
-          {/* Mesa Map Area (Middle Column - 7/12) */}
-          <div className="md:col-span-7">
+          {/* Map Area (Center) - 7/12 */}
+          <div className="lg:col-span-7">
             <div className="bg-white p-8 rounded-[48px] border shadow-inner relative h-[750px] overflow-hidden" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1.5px, transparent 0)', backgroundSize: '40px 40px' }}>
               <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
-                <span className="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Mapa Interactivo del Salón</span>
+                <span className="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Mapa Interactivo</span>
                 <span className="bg-emerald-500 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
-                  {mesas.filter(m => orders.some(o => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre) && o.estado !== 'listo' && o.estado !== 'anulado')).length} Mesas Activas
+                  {mesas.filter(m => orders.some(o => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre) && o.estado !== 'listo' && o.estado !== 'anulado' && o.estado !== 'pendiente')).length} Mesas Activas
                 </span>
               </div>
               
               {mesas.map(m => {
-                const hasO = orders.some(o => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre) && o.estado !== 'listo' && o.estado !== 'anulado');
+                const hasO = orders.some(o => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre) && o.estado !== 'listo' && o.estado !== 'anulado' && o.estado !== 'pendiente');
                 return (
                   <div key={m.id} onClick={() => setSelectedMesa(m)} style={{ left: `${m.pos_x}px`, top: `${m.pos_y}px`, position: 'absolute' }} className={`w-28 h-28 rounded-[32px] border-4 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-2xl hover:z-20 ${hasO ? 'bg-emerald-50 border-emerald-500 ring-8 ring-emerald-500/10' : 'bg-white border-slate-100 hover:border-blue-400 hover:shadow-blue-200'}`}>
                     <span className="text-[10px] font-black uppercase opacity-20 leading-none mb-1 tracking-widest">Mesa</span>
@@ -231,60 +253,35 @@ export default function AdminCaja() {
             </div>
           </div>
 
-          {/* Incoming Orders (Right Column - 3/12) */}
-          <div className="md:col-span-3 space-y-6 min-w-[300px]">
-            <div className="bg-blue-600 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden border-4 border-white">
-               <h2 className="text-white font-black text-2xl mb-4">PANEL DE PEDIDOS ACTIVO</h2>
-               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
-               
-               <div className="flex items-center justify-between mb-6 relative z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-white/10 p-2 rounded-xl text-blue-400"><Send className="w-5 h-5"/></div>
-                    <h3 className="text-white font-black text-xs uppercase tracking-widest">Pedidos App / Web</h3>
-                  </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-[9px] font-black animate-pulse">
-                    {orders.filter(o => o.estado === 'pendiente' && !mesas.some(m => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre))).length} NUEVOS
-                  </span>
+          {/* Incoming Orders (Right Column) - 3/12 */}
+          <div className="lg:col-span-3 space-y-6">
+            <div className="bg-slate-900 rounded-[40px] p-6 h-[750px] flex flex-col shadow-2xl relative overflow-hidden border-4 border-blue-500/30">
+               <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-white font-black text-xs uppercase tracking-[0.2em]">Pedidos App / Web</h3>
+                  <span className="bg-blue-500 text-white text-[9px] font-black px-2 py-1 rounded-full animate-pulse">NUEVOS</span>
                </div>
-
-               <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar relative z-10">
-                  {orders.filter(o => o.estado === 'pendiente' && !mesas.some(m => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre))).length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-white/20 gap-4">
-                      <Clock className="w-16 h-16"/>
-                      <p className="font-black text-xs uppercase tracking-widest">Esperando pedidos...</p>
+               
+               <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                  {orders.filter(o => o.estado === 'pendiente').length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center opacity-20 text-white text-center">
+                       <Send className="w-12 h-12 mb-4"/>
+                       <p className="font-black text-[10px] uppercase tracking-widest">Esperando pedidos...</p>
                     </div>
                   ) : (
-                    orders.filter(o => o.estado === 'pendiente' && !mesas.some(m => (o.mesa_nombre || "").toString().includes(m.numero_o_nombre))).map((o, i) => (
-                      <div key={i} className="bg-white/5 border border-white/10 p-5 rounded-3xl group hover:bg-white/10 transition-all">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <span className="text-blue-400 text-[9px] font-black uppercase tracking-widest">Nuevo Pedido Web</span>
-                            <h4 className="text-white font-black text-lg leading-tight mt-1">{o.cliente_nombre}</h4>
-                          </div>
-                          <p className="text-emerald-400 font-black text-xl tracking-tighter">${o.total.toFixed(2)}</p>
-                        </div>
-                        
-                        <div className="text-white/60 text-xs font-medium mb-4 line-clamp-2 italic">
-                          "{o.items}"
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => setConfirmData({type: 'anular', id: o.id, text: '¿Rechazar este pedido?'})}
-                            className="flex-1 bg-white/5 text-white/40 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-500/20 hover:text-rose-400 transition-all"
-                          >
-                            Rechazar
-                          </button>
-                          <button 
-                            onClick={async () => {
-                              await fetch(`/api/pedidos/${o.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'confirmado' }) });
-                              fetchData();
-                            }}
-                            className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all"
-                          >
-                            Autorizar
-                          </button>
-                        </div>
+                    orders.filter(o => o.estado === 'pendiente').map(o => (
+                      <div key={o.id} className="bg-white/5 border border-white/10 p-5 rounded-[24px] hover:bg-white/10 transition-all group">
+                         <div className="flex justify-between items-start mb-3">
+                            <div>
+                               <p className="text-white font-black text-sm uppercase tracking-tight">{o.cliente_nombre}</p>
+                               <span className="text-[10px] text-blue-400 font-bold">{o.mesa_nombre ? `Mesa ${o.mesa_nombre}` : 'Para llevar'}</span>
+                            </div>
+                            <span className="text-emerald-400 font-black text-lg">${o.total.toFixed(2)}</span>
+                         </div>
+                         <p className="text-slate-400 text-[11px] mb-4 line-clamp-2">{o.items}</p>
+                         <div className="grid grid-cols-2 gap-2">
+                            <button onClick={() => handleAuthorize(o.id)} className="bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-black py-3 rounded-xl uppercase transition-all">Autorizar</button>
+                            <button onClick={() => handleReject(o.id)} className="bg-white/5 hover:bg-rose-500/20 text-rose-500 text-[9px] font-black py-3 rounded-xl uppercase transition-all">Rechazar</button>
+                         </div>
                       </div>
                     ))
                   )}
